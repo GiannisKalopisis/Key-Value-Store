@@ -1,6 +1,12 @@
 # Compiled class file
 *.class
 
+# Maven compiled files
+target
+
+# data files
+src/main/resources/dataToIndex.txt
+
 # Log file
 *.log
 
