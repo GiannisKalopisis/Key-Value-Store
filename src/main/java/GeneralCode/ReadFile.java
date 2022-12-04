@@ -1,6 +1,7 @@
-package DataCreation;
+package GeneralCode;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,5 +27,26 @@ public class ReadFile {
         }
 
         return dataMap;
+    }
+
+    public static ArrayList<String> readDataToIndexFromFile(String filePath) {
+        ArrayList<String> data = new ArrayList<>();
+
+        File file = new File(filePath);
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            String line;
+            while ((line = br.readLine()) != null) {
+                data.add(line);
+            }
+        } catch (FileNotFoundException e) {
+            System.err.println("Couldn't find file: " + filePath);
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            System.err.println("Couldn't read line of file: " + filePath);
+            throw new RuntimeException(e);
+        }
+
+        return data;
     }
 }

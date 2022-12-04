@@ -22,8 +22,7 @@ public class ParametersController {
     }
 
     private boolean hasCorrectNumOfParameters(int argsLength) {
-        int numOfParameters = 10;
-        return argsLength == numOfParameters;
+        return argsLength == 10;
     }
 
     private void assignParameters(String [] args) {
