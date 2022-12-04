@@ -1,4 +1,4 @@
-package kvClient;
+package KVClient;
 
 public class ParametersController {
 

@@ -1,9 +1,9 @@
-package kvServer;
+package KVServer;
 
 public class ParametersController {
 
     private String ipAddress;
-    private String port;
+    private int port;
 
 
     public void readParameters(String [] args){
@@ -25,7 +25,11 @@ public class ParametersController {
                     ipAddress = args[i + 1];
                     break;
                 case "-p":
-                    port = args[i + 1];
+                    try {
+                        port = Integer.parseInt(args[i+1]);
+                    } catch (NumberFormatException nfe) {
+                        throw new NumberFormatException("Couldn't convert port \"" + args[i+1] + "\" to Integer.");
+                    }
                     break;
                 default:
                     throw new RuntimeException("Wrong parameter flag: " + args[i]);
@@ -37,7 +41,7 @@ public class ParametersController {
         return ipAddress;
     }
 
-    public String getPort() {
+    public int getPort() {
         return port;
     }
 }
