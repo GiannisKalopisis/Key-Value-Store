@@ -7,7 +7,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.Set;
 
 public class CreateValues {
 
@@ -25,9 +24,9 @@ public class CreateValues {
     public void createData() {
         StringBuilder tempString = new StringBuilder();
         for (int i = 0; i < this.parametersController.getNumOfLines(); i++) {
-            tempString.append(topLvlKeyPrefix).append(i).append(" ->");
+            tempString.append(topLvlKeyPrefix).append(i+1).append(" ->");
             tempString.append(createValue(parametersController.getMaxNestingLevel()));
-            tempString.append("\n");
+            if (i < (this.parametersController.getNumOfLines() - 1)) tempString.append("\n");
         }
         writeToFile(tempString.toString());
     }
@@ -41,12 +40,12 @@ public class CreateValues {
         for (int i = 0; i < numKeysOfCurrentLvl; i++) {
             // get a key that is  not written in current level
             String newKey = getAcceptedKey(new ArrayList<>(dataMap.keySet()), usedKeys);
+            usedKeys.add(newKey);
             // write key
             valueString.append(newKey).append(" ->");
 
             // check if put nesting
             if (nestingLvl > 0 && addNestedValue()) {
-//                System.out.println("GO FOR NESTING");
                 valueString.append(createValue(nestingLvl - 1));
             } else {    // else put value of key type
                 switch (dataMap.get(newKey)) {
@@ -54,7 +53,7 @@ public class CreateValues {
                         valueString.append(" ").append(getRandomInt(100));
                         break;
                     case "float":
-                        valueString.append(" ").append(getRandomFloat(0, 100));
+                        valueString.append(" ").append(getRandomFloat(100));
                         break;
                     case "string":
                         valueString.append(" ").append("\"")
@@ -76,14 +75,14 @@ public class CreateValues {
     }
 
     private boolean addNestedValue() {
-        return !(getRandomFloat(0, 1) > nestedValuePossibility);
+        return !(getRandomFloat(1) > nestedValuePossibility);
     }
 
     private String getAcceptedKey(ArrayList<String> keySet, ArrayList<String> usedKeys) {
         int randomPos = getRandomInt(keySet.size() - 1);
         while (true) {
             if (usedKeys.contains(keySet.get(randomPos))) {
-                randomPos = getRandomInt(keySet.size());
+                randomPos = getRandomInt(keySet.size() - 1);
                 continue;
             }
             break;
@@ -95,8 +94,8 @@ public class CreateValues {
         return (int)(Math.random() * (max + 1));
     }
 
-    private float getRandomFloat(int min, int max) {
-        return (float)(Math.random() * (max - min + 1) + min);
+    private float getRandomFloat(int max) {
+        return (float)(Math.random() * (max + 1));
     }
 
     private String getRandomSting(int maxLength) {
