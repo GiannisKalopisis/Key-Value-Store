@@ -8,13 +8,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 
+import static GeneralCode.RandomGenerators.*;
+
 public class CreateValues {
 
     private final String topLvlKeyPrefix = "key";   // the value of top-level key (i.e. key1, key2, ..., keyN)
     private final String createdFilePath = "src/main/resources/dataToIndex.txt";
     Map<String, String> dataMap;
     ParametersController parametersController;
-    private float nestedValuePossibility = 0.25F;
+    private final float nestedValuePossibility = 0.25F;
 
     public CreateValues(Map<String, String> dataMap, ParametersController parametersController) {
         this.dataMap = dataMap;
@@ -88,18 +90,6 @@ public class CreateValues {
             break;
         }
         return keySet.get(randomPos);
-    }
-
-    private int getRandomInt(int max) {
-        return (int)(Math.random() * (max + 1));
-    }
-
-    private float getRandomFloat(int max) {
-        return (float)(Math.random() * (max + 1));
-    }
-
-    private String getRandomSting(int maxLength) {
-        return RandomStringUtils.randomAlphabetic(maxLength);
     }
 
     private void writeToFile(String data) {

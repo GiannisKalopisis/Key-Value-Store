@@ -31,17 +31,16 @@ public class KVServer {
             DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
             String query = "";
-//            String answer;
-//            QueryExecutor queryExecutor = new QueryExecutor();
+            String answer;
+            RequestHandler handler = new RequestHandler();
 
             // reads message from client until "OVER" is sent
             while (!query.equals("OVER")) {
                 try {
                     query = in.readUTF();
-//                    answer = queryExecutor.execute(query);
-//                    out.writeUTF(answer);
-                    System.out.println("client send: " + query);
-                    out.writeUTF("server: " + query);
+                    answer = handler.execute(query);
+                    System.out.println("Answer is: \"" + answer + "\"");
+                    out.writeUTF(answer);
                     out.flush();
                 } catch(IOException i) {
                     i.printStackTrace();

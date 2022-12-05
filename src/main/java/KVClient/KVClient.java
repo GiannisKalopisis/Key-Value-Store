@@ -2,15 +2,13 @@ package KVClient;
 
 import GeneralCode.ReadFile;
 
+import java.io.DataInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Map;
-
-import java.net.*;
-import java.io.*;
 
 public class KVClient {
 
-    public KVClient(ArrayList<ServerInfo> servers, ArrayList<String> dataToIndex) {
+    public KVClient(ArrayList<ServerInfo> servers, ArrayList<String> dataToIndex, int replicationFactor) {
 
         ArrayList<SocketStructure> sockets = new ArrayList<>();
 
@@ -23,6 +21,10 @@ public class KVClient {
 
         String line = "";
         DataInputStream terminalInput = new DataInputStream(System.in);
+
+        // send init data
+        RequestHelper requestHelper = new RequestHelper();
+        requestHelper.replicateDataToServers(sockets, dataToIndex, replicationFactor);
 
         // keep reading until "OVER" is terminalInput
         while (!line.equals("OVER")) {
@@ -61,6 +63,6 @@ public class KVClient {
         ArrayList<ServerInfo> servers = ReadFile.getServersFromFile(parametersController.getServerFilePath());
         ArrayList<String> dataToIndex = ReadFile.readDataToIndexFromFile(parametersController.getDataToIndexPath());
 
-        new KVClient(servers, dataToIndex);
+        new KVClient(servers, dataToIndex, parametersController.getReplicationFactor());
     }
 }

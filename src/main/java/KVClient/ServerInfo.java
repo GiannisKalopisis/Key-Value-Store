@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 public class ServerInfo {
 
-    private String ipAddress;
-    private Integer port;
+    private final String ipAddress;
+    private final Integer port;
 
     public ServerInfo(String ipAddress, Integer port) {
         this.ipAddress = ipAddress;

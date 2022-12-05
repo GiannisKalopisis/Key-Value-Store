@@ -38,7 +38,6 @@ public class ReadFile {
         try {
             BufferedReader br = new BufferedReader(new FileReader(file));
             String line;
-            System.out.println("Reading Servers");
             while ((line = br.readLine()) != null) {
                 String[] args = line.split(" ");
                 try {
