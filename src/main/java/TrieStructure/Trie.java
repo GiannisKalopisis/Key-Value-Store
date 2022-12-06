@@ -27,7 +27,8 @@ public class Trie {
             }
             current = node;
         }
-        return current;
+//        return current;
+        return current.isEndOfWord() ? current : null;
     }
 
     public void delete(String word) {

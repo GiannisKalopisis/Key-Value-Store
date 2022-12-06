@@ -5,7 +5,7 @@ import java.util.HashMap;
 public class TrieNode {
 
     private boolean isEndOfWord;
-    private HashMap<Character, TrieNode> children;
+    private final HashMap<Character, TrieNode> children;
     private String leaf;
 
     public TrieNode(){
