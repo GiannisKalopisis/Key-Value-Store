@@ -24,19 +24,18 @@ public class KVClient {
 
         // send init data
         RequestHelper requestHelper = new RequestHelper();
-        requestHelper.replicateDataToServers(sockets, dataToIndex, replicationFactor);
+        boolean indexingDone = requestHelper.replicateInitDataToServers(sockets, dataToIndex, replicationFactor);
 
         // keep reading until "OVER" is terminalInput
-        while (!line.equals("OVER")) {
-            try {
-                line = terminalInput.readLine();
-                for (int i = 0; i < sockets.size(); i++) {
-                    sockets.get(i).writeToSocket(line);
-                    String serverResponse = sockets.get(i).readFromSocket();
-                    System.out.println(serverResponse);
+        if (indexingDone) {
+            while (!line.equals("OVER")) {
+                try {
+                    line = terminalInput.readLine();
+                    requestHelper.processAndSendRequest(sockets, line, replicationFactor);
+                    System.out.println("=========================o=========================");
+                } catch(IOException i) {
+                    System.out.println("An IOException occurred while reading from terminal. Try again.");
                 }
-            } catch(IOException i) {
-                System.out.println(i);
             }
         }
 

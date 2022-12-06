@@ -25,26 +25,23 @@ public class KVServer {
             System.out.println("Waiting for a client ...");
             socket = server.accept();
             System.out.println("Client accepted");
+            System.out.println("=========================o=========================");
 
-            // takes input from the client socket
-            DataInputStream in = new DataInputStream(socket.getInputStream());
-            DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
-            String query = "";
+            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+            String query;
             String answer;
             RequestHandler handler = new RequestHandler();
 
-            // reads message from client until "OVER" is sent
-            while (!query.equals("OVER")) {
-                try {
-                    query = in.readUTF();
-                    answer = handler.execute(query);
-                    System.out.println("Answer is: \"" + answer + "\"");
-                    out.writeUTF(answer);
-                    out.flush();
-                } catch(IOException i) {
-                    i.printStackTrace();
-                }
+            while ((query = in.readLine()) != null){
+                System.out.println("Query: \"" + query + "\"");
+                answer = handler.execute(query);
+                System.out.println("Answer: \"" + answer + "\"");
+                out.println(answer);
+                out.flush();
+                System.out.println("=========================o=========================");
             }
 
             // close connection
@@ -52,6 +49,7 @@ public class KVServer {
             socket.close();
             in.close();
             out.close();
+            server.close();
         } catch(IOException i) {
             i.printStackTrace();
         }

@@ -1,19 +1,21 @@
 package KVServer;
 
 import TrieStructure.Trie;
+import TrieStructure.TrieNode;
 
-import java.util.Arrays;
 
 public class RequestHandler {
 
-    private Trie trie = new Trie();
-    private RequestParser parser = new RequestParser();
+    private final Trie trie = new Trie();
+    private final RequestParser parser = new RequestParser();
 
     public String execute(String query) {
 
         String[] queryParts = parser.parseKeyValue(query);
 
         switch (queryParts[0]) {
+            case "PING":
+                return "OK";
             case "PUT":
                 return executePutRequest(queryParts[1]);
             case "GET":
@@ -33,21 +35,30 @@ public class RequestHandler {
     private String executePutRequest(String query) {
         String[] splittedData = parser.parseKeyValue(query);
         if (trie.search(splittedData[0]) == null) {
-            System.out.println("key: \"" + splittedData[0] + "\"");
-            System.out.println("value: \"" + splittedData[1] + "\"");
             trie.insert(splittedData[0], splittedData[1]);
-            return "Added " + query;
+            return "OK";
         } else {
             return "Data \"" + query + "\" already exists.";
         }
     }
 
     private String executeGetRequest(String query) {
-        return "null";
+        System.out.println("--> \"" + query + "\"");
+        TrieNode node = trie.search(query);
+        if (node == null) {
+            return "NOT FOUND";
+        } else {
+            return node.getLeaf();
+        }
     }
 
     private String executeDeleteRequest(String query) {
-        return null;
+        if (trie.search(query) != null) {
+            trie.delete(query);
+            return "OK";
+        } else {
+            return "NOT FOUND";
+        }
     }
 
     private String executeQueryRequest(String query) {
