@@ -35,6 +35,8 @@ public class RequestHandler {
     private String executePutRequest(String query) {
         String[] splittedData = parser.parseKeyValue(query);
         if (trie.search(splittedData[0]) == null) {
+//            String data = ;
+            System.out.println(splittedData[0] + " ### \"" + splittedData[1].split("-> \\[", 2)[1] + "\"");
             trie.insert(splittedData[0], splittedData[1]);
             return "OK";
         } else {
