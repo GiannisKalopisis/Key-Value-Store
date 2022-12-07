@@ -21,6 +21,8 @@ public class TestTrieStructure {
 
         DataTree root = new DataTree();
         root.insert("-> [ computer -> \"QiYa\" | small -> [ hospital -> \"CxLC\" | stage -> \"ehtB\" | color -> \"kYeV\" | machine -> [ day -> \"yLZM\" | office -> 81 ] ] | college -> \"dkKe\" | language -> \"mqTq\" | factor -> 16.31885 ]");
+        System.out.println("=========================================");
+        root.insert("-> [ ]");
 
 //        testNode = trie.search("key3");
 //        if (testNode != null) {
