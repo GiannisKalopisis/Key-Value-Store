@@ -6,23 +6,27 @@ public class TrieNode {
 
     private boolean isEndOfWord;
     private final HashMap<Character, TrieNode> children;
-    private String leaf;
+    private DataTree leaf;
 
     public TrieNode(){
         children = new HashMap<>();
         isEndOfWord = false;
-        leaf = null;
+        leaf = new DataTree();
     }
 
     public HashMap<Character, TrieNode> getChildren() {
         return children;
     }
 
-    public void setLeaf(String leaf) {
-        this.leaf = leaf;
+    public void setLeaf(String data) {
+        leaf.insert(data.trim(),leaf.getRoot());
     }
 
-    public String getLeaf() {
+    public String getLeafData() {
+        return leaf.traverse(leaf.getRoot(), "").replaceAll(" +", " ");
+    }
+
+    public DataTree getLeafNode() {
         return leaf;
     }
 

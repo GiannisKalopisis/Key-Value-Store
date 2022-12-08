@@ -1,13 +1,12 @@
 package TrieStructure;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class LeafNode {
 
-    private String key;
-    private String value;
-    private ArrayList<LeafNode> children;
+    private final String key;
+    private final String value;
+    private final ArrayList<LeafNode> children;
 
     public LeafNode() {
         key = null;
@@ -38,10 +37,4 @@ public class LeafNode {
     public ArrayList<LeafNode> getChildren() {
         return children;
     }
-
-    public void addChildren(String key, String value) {
-        LeafNode child = new LeafNode(key,value);
-//        children.put(child);
-    }
-
 }

@@ -2,7 +2,7 @@ package TrieStructure;
 
 public class DataTree {
 
-    private LeafNode root;
+    private final LeafNode root;
 
     public DataTree() {
         root = new LeafNode();
@@ -13,9 +13,6 @@ public class DataTree {
     }
 
     public String insert(String data, LeafNode parentNode) {
-//        LeafNode current = parentNode;
-//        String data = data.split("-> \\[",2)[1];
-//        System.out.println("Starting data: \"" + data + "\"");
 
         while (data!= null) {
             String[] temp = data.split(" \\| | \\[ | ]", 2);
@@ -24,39 +21,67 @@ public class DataTree {
 
             // go at PREVIOUS LEVEL
             if (temp[0].equals("")) {
-                System.out.println(" ---> previous level");
-                System.out.println(data);
-                System.out.println("---------------------------------");
                 return data;
-                // go at NEW LEVEL
+            // go at NEW LEVEL
             } else if (temp[0].matches("([a-z]|[A-Z])\\w+ ->")) {
                 String[] key_value = temp[0].split(" ->",2);
-                String key = key_value[0];
-                System.out.print("key: \"" + key + "\"");
-                System.out.println(" ---> new level");
-                System.out.println(data);
+                String key = key_value[0].trim();
                 LeafNode newNode = new LeafNode(key);
                 parentNode.getChildren().add(newNode);
                 data = insert(data, newNode);
-                System.out.println("---------------------------------");
             // put HERE
             } else {
                 String[] key_value = temp[0].split("->");
                 if (temp[0].equals("]")) {
-//                    String[] temp1 = data.split(" \\| | \\[ | ]", 2);
                     return data;
                 }
-                String key = key_value[0];
-                String value = key_value[1];
+                String key = key_value[0].trim();
+                String value = key_value[1].trim();
                 LeafNode newNode = new LeafNode(key, value);
                 parentNode.getChildren().add(newNode);
-                System.out.print("key: \"" + key + "\", value: \"" + value + "\"");
-                System.out.println(" ---> insertion at this level");
-                System.out.println(data);
-                System.out.println("---------------------------------");
             }
         }
         return "";
     }
 
+    public String traverse(LeafNode startNode, String startString) {
+        String currentString = startString;
+
+        for (int i = 0; i < startNode.getChildren().size(); i++) {
+            LeafNode child = startNode.getChildren().get(i);
+            String key = child.getKey();
+            String value = child.getValue();
+            currentString += key + " ->";
+            if (hasChildren(child)) {
+                currentString += " [ ";
+                currentString = traverse(child, currentString) + " ]";
+            } else {
+                currentString += " " + value;
+            }
+            if (i < (startNode.getChildren().size() - 1)) {
+                currentString += " | ";
+            }
+        }
+        return currentString;
+    }
+
+    public String search(String[] paths) {
+        LeafNode current = root;
+        for (String path : paths) {
+            System.out.println("path: " + path);
+            for (LeafNode child : current.getChildren()) {
+                System.out.println("child: " + child.getKey());
+                if (child.getKey().equals(path)) {
+                    current = child;
+                    break;
+                }
+            }
+        }
+        System.out.println("current: " + current.getKey());
+        return traverse(current,"");
+    }
+
+    private boolean hasChildren(LeafNode node) {
+        return node.getValue() == null;
+    }
 }
