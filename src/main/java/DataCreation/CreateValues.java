@@ -30,7 +30,7 @@ public class CreateValues {
             tempString.append(createValue(parametersController.getMaxNestingLevel()));
             if (i < (this.parametersController.getNumOfLines() - 1)) tempString.append("\n");
         }
-        writeToFile(tempString.toString());
+        writeToFile(tempString.toString().replaceAll(" +", " "));
     }
 
     private String createValue(int nestingLvl) {
