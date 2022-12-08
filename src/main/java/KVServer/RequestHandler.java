@@ -1,7 +1,11 @@
 package KVServer;
 
+import TrieStructure.DataTree;
+import TrieStructure.LeafNode;
 import TrieStructure.Trie;
 import TrieStructure.TrieNode;
+
+import java.util.Arrays;
 
 
 public class RequestHandler {
@@ -35,9 +39,8 @@ public class RequestHandler {
     private String executePutRequest(String query) {
         String[] splittedData = parser.parseKeyValue(query);
         if (trie.search(splittedData[0]) == null) {
-//            String data = ;
             System.out.println(splittedData[0] + " ### \"" + splittedData[1].split("-> \\[", 2)[1] + "\"");
-            trie.insert(splittedData[0], splittedData[1]);
+            trie.insert(splittedData[0], splittedData[1].split("-> \\[", 2)[1]);
             return "OK";
         } else {
             return "Data \"" + query + "\" already exists.";
@@ -50,7 +53,7 @@ public class RequestHandler {
         if (node == null) {
             return "NOT FOUND";
         } else {
-            return node.getLeaf();
+            return query + " -> [ " + node.getLeafData() + " ]";
         }
     }
 
@@ -64,7 +67,24 @@ public class RequestHandler {
     }
 
     private String executeQueryRequest(String query) {
-        return null;
+        String[] pathParts = query.split("\\.");
+        for (int i = 0; i < pathParts.length; i++) {
+            System.out.println(pathParts[i]);
+        }
+        if (pathParts.length == 1) {
+            return executeGetRequest(pathParts[0]);
+        } else {
+            String[] newArray = Arrays.copyOfRange(pathParts,1,pathParts.length);
+            for (int i = 0; i < newArray.length; i++) {
+                System.out.println("    " + newArray[i]);
+            }
+            TrieNode node = trie.search(pathParts[0]);
+            if (node == null) {
+                return "NOT FOUND";
+            }
+            System.out.println("found node");
+            return node.getLeafNode().search(newArray);
+        }
     }
 
     private String executeComputeRequest(String query) {

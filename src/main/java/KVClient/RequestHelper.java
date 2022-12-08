@@ -78,7 +78,7 @@ public class RequestHelper {
                     System.out.println("Cannot perform GET because " + downServers + " are down. " +
                             "System can handle up to " + (replicationFactor - 1) + " server faults.");
                 } else {
-                    performGet(sockets, request, requestParts);
+                    performGet(sockets, request);
                 }
                 return;
             case "DELETE":
@@ -93,7 +93,7 @@ public class RequestHelper {
                     System.out.println("Cannot perform QUERY because " + downServers + " are down. " +
                             "System can handle up to " + (replicationFactor - 1) + " server faults.");
                 } else {
-                    // do QUERY
+                    performQuery(sockets, request);
                 }
                 return;
             case "COMPUTE":
@@ -110,36 +110,53 @@ public class RequestHelper {
         }
     }
 
-    private static void performGet(ArrayList<SocketStructure> sockets, String request, String[] requestParts) {
-        String serverResponse;
-        String response;
+    private static void performGet(ArrayList<SocketStructure> sockets, String request) {
+        String serverResponse = null;
         for (SocketStructure socket : sockets) {
             socket.writeToSocket(request);
             serverResponse = socket.readFromSocket();
             if (!serverResponse.equals("NOT FOUND")) {
-                response = requestParts[1] + " " + serverResponse;
-                System.out.println(response);
+                System.out.println(serverResponse);
                 return;
             }
         }
+        System.out.println(serverResponse);
     }
 
     private static void performDeletion(ArrayList<SocketStructure> sockets, String request, int replicationFactor) {
         String serverResponse;
-        int counter = 0;
+        int found = 0;
+        int notFound = 0;
         for (SocketStructure socket : sockets) {
             socket.writeToSocket(request);
             serverResponse = socket.readFromSocket();
             if (serverResponse.equals("OK")) {
-                counter++;
+                found++;
+            }
+            if (serverResponse.equals("NOT FOUND")) {
+                notFound++;
             }
         }
-        if (counter == sockets.size()) {
+        if (notFound == sockets.size()) {
             System.out.println("NOT FOUND");
-        } else if (counter == replicationFactor) {
-            System.out.println("Deleted successfully from all servers (" + counter + ").");
-        } else {
-            System.out.println("Couldn't delete it from all servers. Deleted only at (" + counter + ") servers.");
         }
+        if (found == replicationFactor) {
+            System.out.println("Deleted successfully from all servers (" + found + ").");
+        } else {
+            System.out.println("Couldn't delete it from all servers. Deleted only at (" + found + ") servers.");
+        }
+    }
+
+    private static void performQuery(ArrayList<SocketStructure> sockets, String request) {
+        String serverResponse = null;
+        for (SocketStructure socket : sockets) {
+            socket.writeToSocket(request);
+            serverResponse = socket.readFromSocket();
+            if (!serverResponse.equals("NOT FOUND")) {
+                System.out.println(serverResponse);
+                return;
+            }
+        }
+        System.out.println(serverResponse);
     }
 }
