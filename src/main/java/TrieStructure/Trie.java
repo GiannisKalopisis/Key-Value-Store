@@ -27,7 +27,6 @@ public class Trie {
             }
             current = node;
         }
-//        return current;
         return current.isEndOfWord() ? current : null;
     }
 
