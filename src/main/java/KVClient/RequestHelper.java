@@ -1,5 +1,8 @@
 package KVClient;
 
+import net.objecthunter.exp4j.Expression;
+import net.objecthunter.exp4j.ExpressionBuilder;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
@@ -16,9 +19,9 @@ public class RequestHelper {
 
         for (int i = 0; i < dataToIndex.size(); i++) {
             int j = 0;
-            int downServers = kServersAreDown(sockets);
-            if (downServers != 0) {
-                System.out.println("Couldn't complete index process because " + downServers + " are down.");
+            ArrayList<SocketStructure> subSockets = kServersAreDown(sockets);
+            if ((sockets.size() - subSockets.size()) != 0) {
+                System.out.println("Couldn't complete index process because " + (sockets.size() - subSockets.size()) + " are down.");
                 System.out.println("Shutting down...");
                 return false;
             }
@@ -56,21 +59,23 @@ public class RequestHelper {
         return false;
     }
 
-    public int kServersAreDown(ArrayList<SocketStructure> sockets) {
-        int serversDown = 0;
+    public ArrayList<SocketStructure> kServersAreDown(ArrayList<SocketStructure> sockets) {
+        ArrayList<SocketStructure> subSockets = new ArrayList<>();
         for (int i = 0; i < sockets.size(); i++) {
             sockets.get(i).writeToSocket("PING");
             if (!Objects.equals(sockets.get(i).readFromSocket(), "OK")) {
-                serversDown++;
                 System.out.println("Server with IP " + sockets.get(i).getSocket().getInetAddress() +
                         " at port " + sockets.get(i).getSocket().getPort() + " is down.");
+            } else {
+                subSockets.add(sockets.get(i));
             }
         }
-        return serversDown;
+        System.out.println("Subsocket.size() = " + subSockets.size());
+        return subSockets;
     }
 
     public void processAndSendRequest(ArrayList<SocketStructure> sockets,String request, int replicationFactor) {
-        int downServers = kServersAreDown(sockets);
+        ArrayList<SocketStructure> subSockets = kServersAreDown(sockets);
         String[] requestParts = request.split(" ");
         if (requestParts.length == 1) {
             System.out.println("Wrong request syntax. Please give request arguments");
@@ -79,34 +84,35 @@ public class RequestHelper {
         }
         switch (requestParts[0]) {
             case "GET":
-                if ( downServers >= replicationFactor) {
-                    System.out.println("Cannot perform GET because " + downServers + " are down. " +
+                if ((sockets.size() - subSockets.size()) >= replicationFactor) {
+                    System.out.println("Cannot perform GET because " + (sockets.size() - subSockets.size()) + " server(s) is/are down. " +
                             "System can handle up to " + (replicationFactor - 1) + " server faults.");
                 } else {
-                    performGet(sockets, request);
+                    performGet(subSockets, request);
                 }
                 return;
             case "DELETE":
-                if (downServers != 0) {
+                if ((sockets.size() - subSockets.size()) != 0) {
                     System.out.println("Cannot perform DELETE because not all servers are up and running.");
                 } else {
-                    performDeletion(sockets, request, replicationFactor);
+                    performDeletion(subSockets, request, replicationFactor);
                 }
                 return;
             case "QUERY":
-                if ( downServers >= replicationFactor) {
-                    System.out.println("Cannot perform QUERY because " + downServers + " are down. " +
+                if ((sockets.size() - subSockets.size()) >= replicationFactor) {
+                    System.out.println("Cannot perform QUERY because " + (sockets.size() - subSockets.size()) + " server(s) is/are down. " +
                             "System can handle up to " + (replicationFactor - 1) + " server faults.");
                 } else {
-                    performQuery(sockets, request);
+                    performQuery(subSockets, request);
                 }
                 return;
             case "COMPUTE":
-                if ( downServers >= replicationFactor) {
-                    System.out.println("Cannot perform COMPUTE because " + downServers + " are down. " +
+                if ((sockets.size() - subSockets.size()) >= replicationFactor) {
+                    System.out.println("Cannot perform COMPUTE because " + (sockets.size() - subSockets.size()) + " server(s) is/are down. " +
                             "System can handle up to " + (replicationFactor - 1) + " server faults.");
                 } else {
                     // do COMPUTE
+                    performCompute(subSockets, request);
                 }
                 return;
             default:
@@ -158,10 +164,35 @@ public class RequestHelper {
             socket.writeToSocket(request);
             serverResponse = socket.readFromSocket();
             if (!serverResponse.equals("NOT FOUND")) {
-                System.out.println(serverResponse);
+                System.out.println(formatResponse(request,serverResponse));
                 return;
             }
         }
         System.out.println(serverResponse);
+    }
+
+    private static String formatResponse(String request, String response) {
+        String queryPath = request.split(" ", 2)[1];
+        if (response.contains("->")) {
+            return queryPath + " -> [ " + response + " ]";
+        }
+        return queryPath + " -> " + response;
+    }
+
+    private static void performCompute(ArrayList<SocketStructure> sockets, String request) {
+
+        Compute computeClass = new Compute(request);
+        computeClass.exportMathExpression();
+        computeClass.exportQueries();
+        String response = computeClass.sendQueries(sockets);
+        computeClass.printQueries();
+        if (!response.equals("OK")) {
+            System.out.println(response);
+            return;
+        }
+        String mathExpWithNumbers = computeClass.replaceVarsWithVals();
+        Expression expression = new ExpressionBuilder(mathExpWithNumbers).build();
+        double result = expression.evaluate();
+        System.out.println(mathExpWithNumbers + " = " + result);
     }
 }

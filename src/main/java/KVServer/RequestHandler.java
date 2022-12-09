@@ -1,10 +1,7 @@
 package KVServer;
 
-import TrieStructure.DataTree;
-import TrieStructure.LeafNode;
 import TrieStructure.Trie;
 import TrieStructure.TrieNode;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 
@@ -82,22 +79,12 @@ public class RequestHandler {
             if (node == null) {
                 return "NOT FOUND";
             }
-            String returnData = node.getLeafNode().search(newArray);
-            return sendAppropriateMsgQR(query, returnData);
+            return node.getLeafNode().search(newArray);
         }
-    }
-
-    private static String sendAppropriateMsgQR(String query, String returnData) {
-        if (returnData.equals("NOT FOUND")) {
-            return returnData;
-        }
-        if (returnData.contains("->")) {
-            return query + " -> [ " + returnData + " ]";
-        }
-        return query + " -> " + returnData;
     }
 
     private String executeComputeRequest(String query) {
+
         return null;
     }
 
