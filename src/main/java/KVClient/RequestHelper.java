@@ -72,6 +72,11 @@ public class RequestHelper {
     public void processAndSendRequest(ArrayList<SocketStructure> sockets,String request, int replicationFactor) {
         int downServers = kServersAreDown(sockets);
         String[] requestParts = request.split(" ");
+        if (requestParts.length == 1) {
+            System.out.println("Wrong request syntax. Please give request arguments");
+            System.out.println("Not sending it to servers.");
+            return;
+        }
         switch (requestParts[0]) {
             case "GET":
                 if ( downServers >= replicationFactor) {
