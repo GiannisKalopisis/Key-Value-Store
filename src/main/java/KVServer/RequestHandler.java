@@ -4,6 +4,7 @@ import TrieStructure.DataTree;
 import TrieStructure.LeafNode;
 import TrieStructure.Trie;
 import TrieStructure.TrieNode;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 
@@ -53,7 +54,12 @@ public class RequestHandler {
         if (node == null) {
             return "NOT FOUND";
         } else {
-            return query + " -> [ " + node.getLeafData() + " ]";
+            String returnData = node.getLeafData();
+            if (returnData.equals("")) {
+                return query + " -> [ ]";
+            } else {
+                return query + " -> [ " + returnData + " ]";
+            }
         }
     }
 
@@ -68,26 +74,31 @@ public class RequestHandler {
 
     private String executeQueryRequest(String query) {
         String[] pathParts = query.split("\\.");
-        for (int i = 0; i < pathParts.length; i++) {
-            System.out.println(pathParts[i]);
-        }
         if (pathParts.length == 1) {
             return executeGetRequest(pathParts[0]);
         } else {
             String[] newArray = Arrays.copyOfRange(pathParts,1,pathParts.length);
-            for (int i = 0; i < newArray.length; i++) {
-                System.out.println("    " + newArray[i]);
-            }
             TrieNode node = trie.search(pathParts[0]);
             if (node == null) {
                 return "NOT FOUND";
             }
-            System.out.println("found node");
-            return node.getLeafNode().search(newArray);
+            String returnData = node.getLeafNode().search(newArray);
+            return sendAppropriateMsgQR(query, returnData);
         }
+    }
+
+    private static String sendAppropriateMsgQR(String query, String returnData) {
+        if (returnData.equals("NOT FOUND")) {
+            return returnData;
+        }
+        if (returnData.contains("->")) {
+            return query + " -> [ " + returnData + " ]";
+        }
+        return query + " -> " + returnData;
     }
 
     private String executeComputeRequest(String query) {
         return null;
     }
+
 }

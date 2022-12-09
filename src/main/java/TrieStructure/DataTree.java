@@ -1,5 +1,7 @@
 package TrieStructure;
 
+import java.util.ArrayList;
+
 public class DataTree {
 
     private final LeafNode root;
@@ -46,6 +48,7 @@ public class DataTree {
 
     public String traverse(LeafNode startNode, String startString) {
         String currentString = startString;
+        System.out.println("-->traverse<-- :: " + startNode.getKey());
 
         for (int i = 0; i < startNode.getChildren().size(); i++) {
             LeafNode child = startNode.getChildren().get(i);
@@ -67,18 +70,38 @@ public class DataTree {
 
     public String search(String[] paths) {
         LeafNode current = root;
+        System.out.println(current.getKey());
         for (String path : paths) {
-            System.out.println("path: " + path);
-            for (LeafNode child : current.getChildren()) {
-                System.out.println("child: " + child.getKey());
-                if (child.getKey().equals(path)) {
-                    current = child;
-                    break;
-                }
+            System.out.println("path at for-loop of search: " + path);
+            System.out.println("Children of current node (search):");
+            for (int i = 0; i < current.getChildren().size(); i++) {
+                System.out.println("" + current.getChildren().get(i).getKey());
+            }
+            current = searchChildren(path, current.getChildren());
+            if (current == null) {
+                return "NOT FOUND";
+            }
+            System.out.println("current.getKey(): " + current.getKey());
+            System.out.println("-----------------------");
+        }
+
+        String traversedString = traverse(current,"");
+        if (traversedString.equals("")) {   // no children, just value
+            traversedString += current.getValue();
+        }
+
+        return traversedString;
+    }
+
+    private LeafNode searchChildren(String keyPath, ArrayList<LeafNode> children) {
+        System.out.println("Into searchChildren:");
+        for (LeafNode child : children) {
+            System.out.println(child.getKey());
+            if (keyPath.equals(child.getKey())) {
+                return child;
             }
         }
-        System.out.println("current: " + current.getKey());
-        return traverse(current,"");
+        return null;
     }
 
     private boolean hasChildren(LeafNode node) {

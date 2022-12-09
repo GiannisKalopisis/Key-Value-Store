@@ -57,6 +57,11 @@ public class TestTrieStructure {
         String traverseString2 = dataTree2.traverse(dataTree2.getRoot(), "") + " ]";
         traverseString2 = traverseString2.replaceAll(" +", " ");
         System.out.println(traverseString2);
+
+        String traverseString22 = dataTree2.traverse(dataTree2.getRoot().getChildren().get(1).getChildren().get(1), "") + " ]";
+        traverseString22 = traverseString22.replaceAll(" +", " ");
+        System.out.println(traverseString22);
+
         if (data2.equals(traverseString2)) {
             System.out.println("Success");
         } else {
