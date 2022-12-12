@@ -1,8 +1,5 @@
 package KVClient;
 
-import net.objecthunter.exp4j.Expression;
-import net.objecthunter.exp4j.ExpressionBuilder;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
@@ -16,6 +13,7 @@ public class RequestHelper {
         int[] serverRepArray = new int[replicationFactor];
 
         Arrays.fill(serverRepArray, -1);
+        System.out.println("\n\n");
 
         for (int i = 0; i < dataToIndex.size(); i++) {
             int j = 0;
@@ -26,6 +24,8 @@ public class RequestHelper {
                 return false;
             }
             String put = "PUT " + dataToIndex.get(i);
+            put = put.trim().replaceAll("\\s+", " ");
+            System.out.println(put);
             String response = "";
             while (j < replicationFactor){
                 int randomServer = getRandomInt(sockets.size() - 1);
@@ -38,13 +38,12 @@ public class RequestHelper {
                     System.out.println("An error occurred while performing \"" + put + "\" request at server " +
                             sockets.get(randomServer).getSocket().getInetAddress() + " with port " +
                             sockets.get(randomServer).getSocket().getPort());
-                    System.out.println("Indexing process will terminate. Start again.");
-                    return false;
+                    System.out.println("Server will not index that entry...");
+                    break;
                 }
                 serverRepArray[j] = randomServer;
                 j++;
             }
-            System.out.println(put);
             System.out.println(response);
             System.out.println("=========================o=========================");
             Arrays.fill(serverRepArray,-1);
@@ -70,12 +69,12 @@ public class RequestHelper {
                 subSockets.add(sockets.get(i));
             }
         }
-        System.out.println("Subsocket.size() = " + subSockets.size());
         return subSockets;
     }
 
     public void processAndSendRequest(ArrayList<SocketStructure> sockets,String request, int replicationFactor) {
         ArrayList<SocketStructure> subSockets = kServersAreDown(sockets);
+        request = request.trim().replaceAll("\\s+", " ");
         String[] requestParts = request.split(" ");
         if (requestParts.length == 1) {
             System.out.println("Wrong request syntax. Please give request arguments");
@@ -191,8 +190,7 @@ public class RequestHelper {
             return;
         }
         String mathExpWithNumbers = computeClass.replaceVarsWithVals();
-        Expression expression = new ExpressionBuilder(mathExpWithNumbers).build();
-        double result = expression.evaluate();
-        System.out.println(mathExpWithNumbers + " = " + result);
+        MathExpressionEvaluator evaluator = new MathExpressionEvaluator();
+        System.out.println(evaluator.evaluate(mathExpWithNumbers));
     }
 }

@@ -1,6 +1,8 @@
 package KVClient;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Compute {
 
@@ -92,5 +94,39 @@ public class Compute {
             newMathExpression = newMathExpression.replaceAll(query[0], query[2]);
         }
         return newMathExpression;
+    }
+
+    public String[] getVariablesNames() {
+        String[] vars = new String[queriesData.size()];
+        for (int i = 0; i < queriesData.size(); i++) {
+            vars[i] = queriesData.get(i)[0];
+        }
+        return vars;
+    }
+
+    public Map<String, Double> getVariablesValue() {
+        Map<String, Double> values = new HashMap<>();
+        for (int i = 0; i < queriesData.size(); i++) {
+            values.put(queriesData.get(i)[0],stringToDouble(queriesData.get(i)[2]));
+        }
+        return values;
+    }
+
+    public String reconstructMathExpression() {
+        StringBuilder newMathExpression = new StringBuilder();
+        for (int i = 0; i < queriesData.size(); i++) {
+            newMathExpression.append(queriesData.get(i)[0]).append("=").append(queriesData.get(i)[2]).append("; ");
+        }
+        newMathExpression.append(this.mathExpression).append(";");
+        return newMathExpression.toString();
+    }
+
+    private double stringToDouble(String value) {
+        try {
+            return Double.parseDouble(value);
+        } catch (NumberFormatException e) {
+            System.out.println("Couldn't convert " + value + " to double. Convert it to 0.0");
+            return 0.00;
+        }
     }
 }
