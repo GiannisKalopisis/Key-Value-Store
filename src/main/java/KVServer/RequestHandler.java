@@ -26,8 +26,6 @@ public class RequestHandler {
                 return executeDeleteRequest(queryParts[1]);
             case "QUERY":
                 return executeQueryRequest(queryParts[1]);
-            case "COMPUTE":
-                return executeComputeRequest(queryParts[1]);
             default:
                 System.out.println("Wrong type of query. Request must be: PUT, GET, DELETE, QUERY, COMPUTE.");
                 return "WRONG QUERY TYPE";
@@ -37,8 +35,15 @@ public class RequestHandler {
     private String executePutRequest(String query) {
         String[] splittedData = parser.parseKeyValue(query);
         if (trie.search(splittedData[0]) == null) {
-            System.out.println(splittedData[0] + " ### \"" + splittedData[1].split("-> \\[", 2)[1] + "\"");
-            trie.insert(splittedData[0], splittedData[1].split("-> \\[", 2)[1]);
+            try {
+                trie.insert(splittedData[0], splittedData[1].split("-> \\[", 2)[1]);
+            } catch (ArrayIndexOutOfBoundsException e) {
+                trie.delete(splittedData[0]);
+                System.err.println("Error while indexing data of \"" + query + "\". " +
+                        "Data don't have the right format.");
+                System.err.println("Server will not index \"" + splittedData[0] + "\".");
+                return "ERROR";
+            }
             return "OK";
         } else {
             return "Data \"" + query + "\" already exists.";
@@ -46,7 +51,6 @@ public class RequestHandler {
     }
 
     private String executeGetRequest(String query) {
-        System.out.println("--> \"" + query + "\"");
         TrieNode node = trie.search(query);
         if (node == null) {
             return "NOT FOUND";
@@ -82,10 +86,4 @@ public class RequestHandler {
             return node.getLeafNode().search(newArray);
         }
     }
-
-    private String executeComputeRequest(String query) {
-
-        return null;
-    }
-
 }

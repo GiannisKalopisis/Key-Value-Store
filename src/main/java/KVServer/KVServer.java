@@ -38,14 +38,14 @@ public class KVServer {
             while ((query = in.readLine()) != null){
                 System.out.println("Query: \"" + query + "\"");
                 answer = handler.execute(query);
-                System.out.println("Answer: \"" + answer + "\"");
+                System.out.println("\"" + answer + "\"");
                 out.println(answer);
                 out.flush();
                 System.out.println("=========================o=========================");
             }
 
             // close connection
-            System.out.println("Closing connection");
+            System.out.println("\n\nClosing connection");
             socket.close();
             in.close();
             out.close();
