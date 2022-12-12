@@ -14,7 +14,7 @@ public class DataTree {
         return root;
     }
 
-    public String insert(String data, LeafNode parentNode) {
+    public String insert(String data, LeafNode parentNode) throws ArrayIndexOutOfBoundsException{
 
         while (data!= null) {
             String[] temp = data.split(" \\| | \\[ | ]", 2);
@@ -48,7 +48,6 @@ public class DataTree {
 
     public String traverse(LeafNode startNode, String startString) {
         String currentString = startString;
-        System.out.println("-->traverse<-- :: " + startNode.getKey());
 
         for (int i = 0; i < startNode.getChildren().size(); i++) {
             LeafNode child = startNode.getChildren().get(i);

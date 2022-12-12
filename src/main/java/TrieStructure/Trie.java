@@ -8,10 +8,13 @@ public class Trie {
         root = new TrieNode();
     }
 
-    public void insert(String word, String data) {
+    public void insert(String word, String data) throws ArrayIndexOutOfBoundsException{
         TrieNode current = root;
-        for (char l: word.toCharArray()) {
-            current = current.getChildren().computeIfAbsent(l, c -> new TrieNode());
+        for (char ch: word.toCharArray()) {
+            if (!current.getChildren().containsKey(ch)) {
+                current.getChildren().put(ch, new TrieNode());
+            }
+            current = current.getChildren().get(ch);
         }
         current.setLeaf(data);
         current.setEndOfWord(true);
@@ -19,8 +22,7 @@ public class Trie {
 
     public TrieNode search(String word) {
         TrieNode current = root;
-        for (int i = 0; i < word.length(); i++) {
-            char ch = word.charAt(i);
+        for (char ch : word.toCharArray()) {
             TrieNode node = current.getChildren().get(ch);
             if (node == null) {
                 return null;
@@ -31,31 +33,12 @@ public class Trie {
     }
 
     public void delete(String word) {
-        delete(root, word, 0);
-    }
-
-    private boolean delete(TrieNode currentNode, String word, int index) {
-        if (index == word.length()) {
-            if (!currentNode.isEndOfWord()) {
-                return false;
-            }
-            currentNode.setEndOfWord(false);
-            return currentNode.getChildren().isEmpty();
+        TrieNode current = root;
+        for (char ch : word.toCharArray()) {
+            if (!current.getChildren().containsKey(ch))
+                return;
+            current = current.getChildren().get(ch);
         }
-        char ch = word.charAt(index);
-        TrieNode node = currentNode.getChildren().get(ch);
-
-        // character doesn't exist -> so word too
-        if (node == null) {
-            return false;
-        }
-
-        boolean shouldDeleteCurrentNode = delete(node, word, index + 1) && !node.isEndOfWord();
-
-        if (shouldDeleteCurrentNode) {
-            currentNode.getChildren().remove(ch);
-            return currentNode.getChildren().isEmpty();
-        }
-        return false;
+        current.setEndOfWord(false);
     }
 }

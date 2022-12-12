@@ -6,9 +6,14 @@ public class TrieNode {
 
     private boolean isEndOfWord;
     private final HashMap<Character, TrieNode> children;
-    private DataTree leaf;
+    private final DataTree leaf;
 
     public TrieNode(){
+        children = new HashMap<>();
+        isEndOfWord = false;
+        leaf = new DataTree();
+    }
+    public TrieNode(Character ch){
         children = new HashMap<>();
         isEndOfWord = false;
         leaf = new DataTree();
@@ -18,7 +23,7 @@ public class TrieNode {
         return children;
     }
 
-    public void setLeaf(String data) {
+    public void setLeaf(String data) throws ArrayIndexOutOfBoundsException{
         leaf.insert(data.trim(),leaf.getRoot());
     }
 
