@@ -14,8 +14,8 @@ public class KVServer {
 
         String address = parametersController.getIpAddress();
         int port = parametersController.getPort();
-        Socket socket = null;
-        ServerSocket server = null;
+        Socket socket;
+        ServerSocket server;
 
         // starts server and waits for a connection
         try {
@@ -25,7 +25,7 @@ public class KVServer {
             System.out.println("Waiting for a client ...");
             socket = server.accept();
             System.out.println("Client accepted");
-            System.out.println("=========================o=========================");
+            System.out.println("==================================================");
 
 
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
@@ -36,12 +36,12 @@ public class KVServer {
             RequestHandler handler = new RequestHandler();
 
             while ((query = in.readLine()) != null){
-                System.out.println("Query: \"" + query + "\"");
+                System.out.println("Query: '" + query + "'");
                 answer = handler.execute(query);
-                System.out.println("\"" + answer + "\"");
+                System.out.println(answer);
                 out.println(answer);
                 out.flush();
-                System.out.println("=========================o=========================");
+                System.out.println("==================================================");
             }
 
             // close connection

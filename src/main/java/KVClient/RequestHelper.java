@@ -73,7 +73,6 @@ public class RequestHelper {
     }
 
     public void processAndSendRequest(ArrayList<SocketStructure> sockets,String request, int replicationFactor) {
-        ArrayList<SocketStructure> subSockets = kServersAreDown(sockets);
         request = request.trim().replaceAll("\\s+", " ");
         String[] requestParts = request.split(" ");
         if (requestParts.length == 1) {
@@ -81,6 +80,7 @@ public class RequestHelper {
             System.out.println("Not sending it to servers.");
             return;
         }
+        ArrayList<SocketStructure> subSockets = kServersAreDown(sockets);
         switch (requestParts[0]) {
             case "GET":
                 if ((sockets.size() - subSockets.size()) >= replicationFactor) {
@@ -152,8 +152,6 @@ public class RequestHelper {
         }
         if (found == replicationFactor) {
             System.out.println("Deleted successfully from all servers (" + found + ").");
-        } else {
-            System.out.println("Couldn't delete it from all servers. Deleted only at (" + found + ") servers.");
         }
     }
 
@@ -182,15 +180,25 @@ public class RequestHelper {
 
         Compute computeClass = new Compute(request);
         computeClass.exportMathExpression();
-        computeClass.exportQueries();
+        if (!computeClass.exportQueries()) {
+            System.out.println("Parameters can't have the same name (or substring) of trigonometric and logarithmic functions.");
+            System.out.println("Rename parameters and try again.");
+            return;
+        }
         String response = computeClass.sendQueries(sockets);
-        computeClass.printQueries();
         if (!response.equals("OK")) {
             System.out.println(response);
             return;
         }
         String mathExpWithNumbers = computeClass.replaceVarsWithVals();
         MathExpressionEvaluator evaluator = new MathExpressionEvaluator();
-        System.out.println(evaluator.evaluate(mathExpWithNumbers));
+        try {
+            System.out.println(evaluator.evaluate(mathExpWithNumbers));
+        } catch (Exception e) {
+            System.err.println("Couldn't evaluate the mathematical expression. Check again:");
+            System.err.println("(1) the parenthesis and the syntax of the expression");
+            System.err.println("(2) the names of trigonometric and logarithmic functions");
+            System.out.println("(3) the names of variables to match the variables of the queries.");
+        }
     }
 }
