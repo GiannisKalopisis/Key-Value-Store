@@ -102,6 +102,7 @@ public class CreateValues {
         } catch (IOException e) {
             System.err.println("An error occurred while trying to write to file \"" + createdFilePath + "\".");
             e.printStackTrace();
+            System.exit(-1);
         }
     }
 

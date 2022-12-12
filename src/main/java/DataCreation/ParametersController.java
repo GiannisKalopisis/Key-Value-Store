@@ -15,8 +15,9 @@ public class ParametersController {
 
     public void readParameters(String [] args){
         if (!hasCorrectNumOfParameters(args.length)) {
-            throw new RuntimeException("Error at number of parameters. The correct number of arguments is 10. " +
+            System.err.println("Error at number of parameters. The correct number of arguments is 10. " +
                     "You gave: " + args.length);
+            System.exit(-1);
         }
         assignParameters(args);
     }
@@ -60,7 +61,8 @@ public class ParametersController {
                     }
                     break;
                 default:
-                    throw new RuntimeException("Wrong parameter flag: " + args[i]);
+                    System.err.println("Wrong parameter flag: " + args[i]);
+                    System.exit(-1);
             }
         }
     }
