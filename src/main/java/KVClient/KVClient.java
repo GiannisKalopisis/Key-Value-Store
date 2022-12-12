@@ -8,31 +8,33 @@ import java.util.ArrayList;
 
 public class KVClient {
 
-    public KVClient(ArrayList<ServerInfo> servers, ArrayList<String> dataToIndex, int replicationFactor) {
+    public KVClient(ArrayList<ServerInfo> servers, ArrayList<String> dataToIndex, ParametersController parametersController) {
 
         ArrayList<SocketStructure> sockets = new ArrayList<>();
 
         // create all servers - sockets
         for (int i = 0; i < servers.size(); i++) {
             SocketStructure newSocket = new SocketStructure(i+1);
-            newSocket.initNewSocket(servers.get(i).getIpAddress(), servers.get(i).getPort());
-            sockets.add(newSocket);
+            if (newSocket.initNewSocket(servers.get(i).getIpAddress(), servers.get(i).getPort())) {
+                sockets.add(newSocket);
+            }
         }
+        parametersController.setReplicationFactor(sockets.size());
 
         String line = "";
         DataInputStream terminalInput = new DataInputStream(System.in);
 
         // send init data
         RequestHelper requestHelper = new RequestHelper();
-        boolean indexingDone = requestHelper.replicateInitDataToServers(sockets, dataToIndex, replicationFactor);
+        boolean indexingDone = requestHelper.replicateInitDataToServers(sockets, dataToIndex, parametersController.getReplicationFactor());
 
         // keep reading until "OVER" is terminalInput
         if (indexingDone) {
             while (!line.equals("OVER")) {
                 try {
                     line = terminalInput.readLine();
-                    requestHelper.processAndSendRequest(sockets, line, replicationFactor);
-                    System.out.println("=========================o=========================");
+                    requestHelper.processAndSendRequest(sockets, line, parametersController.getReplicationFactor());
+                    System.out.println("==================================================");
                 } catch(IOException i) {
                     System.out.println("An IOException occurred while reading from terminal. Try again.");
                 }
@@ -62,6 +64,6 @@ public class KVClient {
         ArrayList<ServerInfo> servers = ReadFile.getServersFromFile(parametersController.getServerFilePath());
         ArrayList<String> dataToIndex = ReadFile.readDataToIndexFromFile(parametersController.getDataToIndexPath());
 
-        new KVClient(servers, dataToIndex, parametersController.getReplicationFactor());
+        new KVClient(servers, dataToIndex, parametersController);
     }
 }

@@ -20,21 +20,23 @@ public class SocketStructure {
         return socket;
     }
 
-    public void initNewSocket(String address, int port) {
+    public boolean initNewSocket(String address, int port) {
         // establish a connection
         try {
             socket = new Socket(address, port);
             System.out.println("Connected to server with IP " + address + ", at port " + port + ".");
             socketOutput = new PrintWriter(socket.getOutputStream(), true);
             socketInput = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            return true;
         } catch(UnknownHostException unknownHostException) {
             System.err.println("UnknownHostException error while connecting to servers.");
+            System.out.println("Not connected to server with IP " + address + ", at port " + port + ".");
             unknownHostException.printStackTrace();
-            System.exit(-1);
+            return false;
         } catch(IOException ioException) {
             System.out.println("An IOException occurred. Try to start servers first and then client.");
-            ioException.printStackTrace();
-            System.exit(-1);
+            System.out.println("Not connected to server with IP " + address + ", at port " + port + ".");
+            return false;
         }
     }
 

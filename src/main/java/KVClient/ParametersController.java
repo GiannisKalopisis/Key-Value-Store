@@ -52,4 +52,12 @@ public class ParametersController {
     public int getReplicationFactor() {
         return replicationFactor;
     }
+
+    public void setReplicationFactor(int numOfServers) {
+        if (numOfServers < replicationFactor) {
+            System.out.println("Replication factor is bigger than the number of servers. " +
+                    "Setting Replication factor to (" + numOfServers + ") number of servers.");
+            replicationFactor = numOfServers;
+        }
+    }
 }
