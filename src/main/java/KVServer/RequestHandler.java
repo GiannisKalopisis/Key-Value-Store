@@ -21,7 +21,7 @@ public class RequestHandler {
             case "PUT":
                 return executePutRequest(queryParts[1]);
             case "GET":
-                return executeGetRequest(queryParts[1]);
+                return executeGetRequest(queryParts[1], false);
             case "DELETE":
                 return executeDeleteRequest(queryParts[1]);
             case "QUERY":
@@ -50,7 +50,7 @@ public class RequestHandler {
         }
     }
 
-    private String executeGetRequest(String query) {
+    private String executeGetRequest(String query, boolean isQuery) {
         TrieNode node = trie.search(query);
         if (node == null) {
             return "NOT FOUND";
@@ -58,8 +58,10 @@ public class RequestHandler {
             String returnData = node.getLeafData();
             if (returnData.equals("")) {
                 return query + " -> [ ]";
-            } else {
+            } else if (!isQuery){
                 return query + " -> [ " + returnData + " ]";
+            } else {
+                return returnData;
             }
         }
     }
@@ -76,7 +78,7 @@ public class RequestHandler {
     private String executeQueryRequest(String query) {
         String[] pathParts = query.split("\\.");
         if (pathParts.length == 1) {
-            return executeGetRequest(pathParts[0]);
+            return executeGetRequest(pathParts[0], true);
         } else {
             String[] newArray = Arrays.copyOfRange(pathParts,1,pathParts.length);
             TrieNode node = trie.search(pathParts[0]);
