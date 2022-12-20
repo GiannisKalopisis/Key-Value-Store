@@ -1,7 +1,5 @@
 package DataCreation;
 
-import org.apache.commons.lang3.RandomStringUtils;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -59,7 +57,7 @@ public class CreateValues {
                         break;
                     case "string":
                         valueString.append(" ").append("\"")
-                                .append(getRandomSting(parametersController.getMaxStringLength()))
+                                .append(getRandomString(parametersController.getMaxStringLength()))
                                 .append("\"");
                         break;
                     default:

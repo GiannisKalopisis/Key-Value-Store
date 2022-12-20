@@ -45,7 +45,7 @@ public class RequestHelper {
                 j++;
             }
             System.out.println(response);
-            System.out.println("=========================o=========================");
+            System.out.println("==================================================");
             Arrays.fill(serverRepArray,-1);
         }
         return true;

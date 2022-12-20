@@ -12,7 +12,7 @@ public class RandomGenerators {
         return (float)(Math.random() * (max + 1));
     }
 
-    public static String getRandomSting(int maxLength) {
+    public static String getRandomString(int maxLength) {
         return RandomStringUtils.randomAlphabetic(maxLength);
     }
 }
