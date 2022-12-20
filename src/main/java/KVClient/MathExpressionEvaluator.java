@@ -31,11 +31,6 @@ public class MathExpressionEvaluator {
                     values.push(calcFunction(ops.pop(), values.pop()));
                 }
             } else if (tokens[i] == '+' || tokens[i] == '-' || tokens[i] == '*' || tokens[i] == '/') {
-                // While top of 'ops' has same
-                // or greater precedence to current
-                // token, which is an operator.
-                // Apply operator on top of 'ops'
-                // to top two elements in values stack
                 while (!ops.empty() && hasPrecedence(tokens[i], ops.peek())) {
                     values.push(applyOp(ops.pop(), values.pop(), values.pop()));
                 }
@@ -47,7 +42,6 @@ public class MathExpressionEvaluator {
             }
         }
 
-        // apply remaining ops to remaining values
         while (!ops.empty()) {
             values.push(applyOp(ops.pop(), values.pop(), values.pop()));
         }
@@ -70,7 +64,6 @@ public class MathExpressionEvaluator {
         }
     }
 
-    // Returns true if 'op2' has higher or same precedence as 'op1'
     private static boolean hasPrecedence(char op1, char op2) {
         if (op2 == '(' || op2 == ')')
             return false;
