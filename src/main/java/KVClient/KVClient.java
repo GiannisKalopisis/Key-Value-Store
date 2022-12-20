@@ -5,6 +5,7 @@ import GeneralCode.ReadFile;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 public class KVClient {
 
@@ -26,7 +27,17 @@ public class KVClient {
 
         // send init data
         RequestHelper requestHelper = new RequestHelper();
+        long startTime = System.currentTimeMillis();
         boolean indexingDone = requestHelper.replicateInitDataToServers(sockets, dataToIndex, parametersController.getReplicationFactor());
+        long endTime = System.currentTimeMillis();
+        long elapsedTime = endTime - startTime;
+        long hours = TimeUnit.MILLISECONDS.toHours(elapsedTime);
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(elapsedTime) % 60;
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(elapsedTime) % 60;
+        long milliseconds = TimeUnit.MILLISECONDS.toMillis(elapsedTime) % 1000;
+        System.out.println("Indexing completed after: " + hours + " hours " + minutes + " minutes " + seconds + " seconds " + milliseconds + " milliseconds");
+        System.out.println("You can start doing queries: GET, DELETE, QUERY, COMPUTE");
+        System.out.println("==================================================");
 
         // keep reading until "OVER" is terminalInput
         if (indexingDone) {
@@ -42,10 +53,12 @@ public class KVClient {
         }
 
         // close the connection
+        System.out.println("Closing sockets...");
         for (int i = 0; i < sockets.size(); i++) {
             sockets.get(i).closeSocket();
         }
         try {
+            System.out.println("Closing terminal input connection...");
             terminalInput.close();
         }
         catch(IOException ioException) {
